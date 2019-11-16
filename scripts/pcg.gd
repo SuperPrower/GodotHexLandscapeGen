@@ -30,7 +30,7 @@ Agents:
 		- Gets most points by leaving Reefs in Deep Water near Ground Beach
 """
 
-export var islands: int = 2
+export var n_agents: int = 2
 export var island_radius: int = 3
 export var island_max_walk: int = 10
 export var island_fitness_edge_weight: float = 1.5
@@ -113,12 +113,12 @@ func simulate_step():
 	# Run Island agents step by step
 	if stage < 3:
 		var all_done = true
-		for i in range(islands):
+		for i in range(n_agents):
 			var stage_done = call_stage(stage, false, i)
 			all_done = (all_done && stage_done)
 		
 		if all_done:
-			for i in range(islands): call_stage(stage, true, i)
+			for i in range(n_agents): call_stage(stage, true, i)
 			stage += 1
 	else:
 		print("Done")
@@ -379,13 +379,15 @@ func beach_agent_fitness(i, c: Vector2) -> float:
 	# not near the shallow water, but still near the water
 	# must be enabled and triggered by probability, but still pretty good
 	elif (tile_near_type(c, TG.TerrainType.OCEAN) and
-		hexgrid.tiles[c].terrain == TG.TerrainType.GRASS
+		hexgrid.tiles[c].terrain == TG.TerrainType.GRASS and
+		beach_sand_anyway_prob > 0.0
 	):
 		score = 0.5 + randf() * beach_sand_anyway_prob
 	
 	# No more shore to fill with sand, so maybe try to make sand thiccer?
 	elif (tile_near_type(c, TG.TerrainType.BEACH) and
-		hexgrid.tiles[c].terrain == TG.TerrainType.GRASS
+		hexgrid.tiles[c].terrain == TG.TerrainType.GRASS and
+		beach_sand_anyway_prob > 0.0
 	):
 		score = 0.1 + (beach_sand_anyway_prob - randf())
 	
